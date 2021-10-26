@@ -1,0 +1,60 @@
+name: validate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gnu:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Prepare the environment
+        run: |
+          sudo apt-get install libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev
+
+      - name: Compile
+        run: |
+          sudo ./.librestore/gnu.sh /output.zip
+          ls /output.zip # Asserts the file is there
+
+  source:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Package
+        run: |
+          sudo ./.librestore/source.sh /output.zip
+          ls /output.zip # Asserts the file is there
+
+  wasm:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Compile
+        run: |
+          sudo ./.librestore/wasm.sh /output.zip
+          ls /output.zip # Asserts the file is there
+
+  # TODO: Windows
